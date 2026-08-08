@@ -1,4 +1,41 @@
+'use client';
+
+import { useState } from 'react';
+import { LocateFixed } from 'lucide-react';
+
 export default function JourneySearchPage() {
+  const [origin, setOrigin] = useState('');
+  const [originCoords, setOriginCoords] = useState<{
+    lat: number;
+    lng: number;
+  } | null>(null);
+  const [locationStatus, setLocationStatus] = useState<
+    'idle' | 'locating' | 'success' | 'error'
+  >('idle');
+
+  function detectLocation() {
+    if (!navigator.geolocation) {
+      setLocationStatus('error');
+      return;
+    }
+
+    setLocationStatus('locating');
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setOriginCoords({
+          lat: position.coords.latitude,
+          lng: position.coords.longitude
+        });
+        setOrigin('Current location');
+        setLocationStatus('success');
+      },
+      () => {
+        setLocationStatus('error');
+      }
+    );
+  }
+
   return (
     <div className="mx-auto max-w-content px-5 sm:px-8 py-14">
       <p className="text-sm font-medium tracking-wide text-tram-dark uppercase mb-3">Step 2 of 2</p>
@@ -13,6 +50,9 @@ export default function JourneySearchPage() {
         action="/results"
         className="max-w-2xl bg-white border border-line rounded-card px-6 sm:px-8 py-6 space-y-6"
       >
+        <input type="hidden" name="originLat" value={originCoords?.lat ?? ''} />
+        <input type="hidden" name="originLng" value={originCoords?.lng ?? ''} />
+
         <div className="grid sm:grid-cols-2 gap-6">
           <div>
             <label htmlFor="origin" className="block text-sm font-medium text-ink mb-1.5">
@@ -23,10 +63,38 @@ export default function JourneySearchPage() {
               name="origin"
               type="text"
               required
+              value={origin}
+              onChange={(event) => {
+                setOrigin(event.target.value);
+                setOriginCoords(null);
+                setLocationStatus('idle');
+              }}
               placeholder="e.g. Clayton Station"
               className="focus-ring w-full rounded-lg border border-line px-3.5 py-2.5 text-ink placeholder:text-inkSoft/70"
             />
+            <button
+              type="button"
+              onClick={detectLocation}
+              disabled={locationStatus === 'locating'}
+              className="focus-ring mt-2 inline-flex items-center gap-2 text-sm font-medium text-tram-dark disabled:opacity-60"
+            >
+              <LocateFixed className="h-4 w-4" aria-hidden="true" />
+              {locationStatus === 'locating' ? 'Detecting location...' : 'Use my current location'}
+            </button>
+
+            {locationStatus === 'success' && (
+              <p role="status" className="mt-1 text-xs text-tram-dark">
+                Current location detected.
+              </p>
+            )}
+
+            {locationStatus === 'error' && (
+              <p role="alert" className="mt-1 text-xs text-caution-dark">
+                We could not access your location. Enter your starting point manually.
+              </p>
+            )}
           </div>
+
           <div>
             <label htmlFor="destination" className="block text-sm font-medium text-ink mb-1.5">
               To
