@@ -14,6 +14,12 @@ const preferencesSchema = z.object({
 });
 
 const requestSchema = z.object({
+  originCoords: z
+  .object({
+    lat: z.number().min(-90).max(90),
+    lng: z.number().min(-180).max(180)
+  })
+  .optional(),
   origin: z.string().min(1),
   destination: z.string().min(1),
   preference: z.enum(['calmest', 'fewest_transfers', 'shortest_walking', 'fastest']).default('calmest'),
@@ -28,10 +34,10 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: 'Invalid request', details: parsed.error.flatten() }, { status: 400 });
   }
 
-  const { origin, destination, preference, preferences } = parsed.data;
+  const { origin, destination, preference, preferences, originCoords } = parsed.data;
   const prefs = (preferences ?? DEFAULT_PREFERENCES) as SensoryPreferences;
 
-  const routes = generateMockRoutes(origin, destination);
+  const routes = generateMockRoutes(origin, destination, originCoords);
   const scored = routes.map((route) => ({ ...route, scoreResult: computeSensoryScore(route, prefs) }));
   const sorted = sortRoutesByPreference(scored, preference);
 

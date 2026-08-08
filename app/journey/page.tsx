@@ -30,8 +30,14 @@ export default function JourneySearchPage() {
         setOrigin('Current location');
         setLocationStatus('success');
       },
-      () => {
+      (error) => {
+        console.error('Location error:', error.message);
         setLocationStatus('error');
+      },
+      {
+        enableHighAccuracy: false,
+        timeout: 10000,
+        maximumAge: 60000
       }
     );
   }
