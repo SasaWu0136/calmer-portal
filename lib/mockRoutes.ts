@@ -68,8 +68,8 @@ const MODES: RouteOption['mode'][] = ['Train', 'Tram', 'Bus', 'Train + Tram', 'T
  * README, "Connecting real data", for how to swap this out later without
  * touching the scoring engine or the UI.
  */
-export function generateMockRoutes(origin: string, destination: string): RouteOption[] {
-  const originCoords = resolveCoords(origin);
+export function generateMockRoutes(origin: string, destination: string, detectedOriginCoords?: Coordinates): RouteOption[] {
+  const originCoords = detectedOriginCoords ?? resolveCoords(origin);
   const destCoords = resolveCoords(destination);
   const baseSeed = hashString(`${origin.toLowerCase()}->${destination.toLowerCase()}`);
   const straightLineKm = distanceMeters(originCoords, destCoords) / 1000;
