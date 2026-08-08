@@ -93,7 +93,10 @@ export default function PreferencesPage() {
           </button>
           <button
             type="button"
-            onClick={() => router.push('/journey')}
+            onClick={() => {
+              setStoredPreferences(prefs);
+              router.push('/journey');
+            }}
             className="focus-ring rounded-full border border-line px-6 py-3 text-ink font-medium hover:bg-paperDim transition-colors"
           >
             Save and plan a journey
