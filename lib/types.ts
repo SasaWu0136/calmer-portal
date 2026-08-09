@@ -20,6 +20,16 @@ export const DEFAULT_PREFERENCES: SensoryPreferences = {
 
 export type CrowdLevel = 'low' | 'medium' | 'high';
 
+export interface CrowdZone {
+  id: string;
+  name: string;
+  level: CrowdLevel;
+  lat: number;
+  lng: number;
+  radiusMeters: number;
+  reason: string;
+}
+
 export interface Coordinates {
   lat: number;
   lng: number;

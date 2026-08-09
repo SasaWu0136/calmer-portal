@@ -8,6 +8,7 @@ import { getChosenRoute } from '@/lib/preferences';
 import { QuietSpace, Disruption, ScoredRoute } from '@/lib/types';
 import SensoryBadge from '@/components/SensoryBadge';
 import type { StopMarker } from '@/components/MapView';
+import { MOCK_CROWD_ZONES } from '@/lib/crowdZonesData';
 
 const MapView = dynamic(() => import('@/components/MapView'), {
   ssr: false,
@@ -75,7 +76,7 @@ export default function MapPage() {
         </p>
       )}
 
-      <MapView center={center} zoom={route ? 13 : 13} quietSpaces={quietSpaces} disruptions={disruptions} stops={stops} routeLine={routeLine} />
+      <MapView center={center} zoom={13} quietSpaces={quietSpaces} disruptions={disruptions} stops={stops} routeLine={routeLine} crowdZones={MOCK_CROWD_ZONES}/>
 
       {route && (
         <p className="text-xs text-inkSoft mt-3 max-w-xl">
