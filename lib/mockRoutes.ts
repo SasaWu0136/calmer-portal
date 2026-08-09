@@ -68,7 +68,7 @@ const MODES: RouteOption['mode'][] = ['Train', 'Tram', 'Bus', 'Train + Tram', 'T
  * README, "Connecting real data", for how to swap this out later without
  * touching the scoring engine or the UI.
  */
-export function generateMockRoutes(origin: string, destination: string, detectedOriginCoords?: Coordinates): RouteOption[] {
+export function generateMockRoutes(origin: string, destination: string, detectedOriginCoords?: Coordinates, selectedMode: 'any' | 'train' | 'tram' | 'bus' = 'any'): RouteOption[] {
   const originCoords = detectedOriginCoords ?? resolveCoords(origin);
   const destCoords = resolveCoords(destination);
   const baseSeed = hashString(`${origin.toLowerCase()}->${destination.toLowerCase()}`);
@@ -76,6 +76,14 @@ export function generateMockRoutes(origin: string, destination: string, detected
 
   const routeCount = 3;
   const routes: RouteOption[] = [];
+  const availableModes: RouteOption['mode'][] =
+  selectedMode === 'train'
+    ? ['Train']
+    : selectedMode === 'tram'
+      ? ['Tram']
+      : selectedMode === 'bus'
+        ? ['Bus']
+        : MODES;
 
   for (let i = 0; i < routeCount; i++) {
     const seed = baseSeed + i * 97;
@@ -89,7 +97,7 @@ export function generateMockRoutes(origin: string, destination: string, detected
     const hasDisruption = r(6) < 0.28;
     const hasConstruction = r(7) < 0.22;
     const busyZone = r(8) < 0.3;
-    const mode = MODES[Math.floor(r(9) * MODES.length)];
+    const mode = availableModes[Math.floor(r(9) * availableModes.length)];
 
     // Simulate a slightly different alighting point per route option, so
     // quiet-space proximity varies meaningfully between alternatives.

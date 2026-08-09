@@ -28,6 +28,8 @@ const detectedOriginCoords =
     : undefined;
   const preference = (searchParams.get('preference') as JourneyPreference) ?? 'calmest';
 
+  const mode = searchParams.get('mode') ?? 'any';
+
   const [scoredRoutes, setScoredRoutes] = useState<ScoredRoute[]>([]);
   const [usingDefaults, setUsingDefaults] = useState(false);
   const [status, setStatus] = useState<'idle' | 'loading' | 'done' | 'error'>('idle');
@@ -42,7 +44,7 @@ const detectedOriginCoords =
     fetch('/api/journey/search', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ origin, destination, preference, preferences,   originCoords: detectedOriginCoords })
+      body: JSON.stringify({ origin, destination, preference, preferences, originCoords: detectedOriginCoords, mode })
     })
       .then((res) => {
         if (!res.ok) throw new Error('Search failed');
@@ -53,7 +55,7 @@ const detectedOriginCoords =
         setStatus('done');
       })
       .catch(() => setStatus('error'));
-  }, [origin, destination, preference, originLat, originLng]);
+  }, [origin, destination, preference, originLat, originLng, mode]);
 
   function handleChoose(route: ScoredRoute) {
     setChosenRoute(route);
