@@ -53,6 +53,7 @@ export interface RouteOption {
   destination: string;
   originCoords: Coordinates;
   destCoords: Coordinates;
+  routePath: Coordinates[];
 }
 
 export type SensoryLabel = 'Low sensory load' | 'Medium sensory load' | 'High sensory load' | 'Very high sensory load';

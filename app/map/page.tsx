@@ -46,10 +46,10 @@ export default function MapPage() {
     : [];
 
   const routeLine: [number, number][] | undefined = route
-    ? [
-        [route.originCoords.lat, route.originCoords.lng],
-        [route.destCoords.lat, route.destCoords.lng]
-      ]
+    ? (route.routePath ?? [
+        route.originCoords,
+        route.destCoords
+      ]).map((point) => [point.lat, point.lng])
     : undefined;
 
   const center: [number, number] = route ? [route.originCoords.lat, route.originCoords.lng] : MELBOURNE_CBD;
@@ -59,13 +59,39 @@ export default function MapPage() {
       <h1 className="font-display text-3xl sm:text-4xl text-ink mb-3">Map view</h1>
 
       {route ? (
-        <div className="mb-6 flex flex-wrap items-center gap-4">
-          <p className="text-inkSoft">
-            Showing <strong className="text-ink font-medium">{route.name}</strong> from {route.origin} to{' '}
-            {route.destination}.
-          </p>
-          <SensoryBadge score={route.scoreResult.score} label={route.scoreResult.label} size="sm" />
-        </div>
+        <section
+          aria-label="Selected navigation route"
+          className="mb-6 rounded-card border border-tram/30 bg-tram-light px-5 py-4"
+        >
+          <div className="flex flex-wrap items-start justify-between gap-4">
+            <div>
+              <p className="text-xs font-medium uppercase tracking-wide text-tram-dark">
+                Navigation preview · Selected route
+              </p>
+
+              <h2 className="mt-1 font-medium text-ink">
+                {route.name}
+              </h2>
+
+              <p className="mt-1 text-sm text-inkSoft">
+                {route.origin} → {route.destination}
+              </p>
+
+              <p className="mt-2 text-sm text-inkSoft">
+                {route.travelTimeMinutes} min · {route.walkingMeters}m walking ·{' '}
+                <span className="capitalize">
+                  {route.crowdLevel} crowd
+                </span>
+              </p>
+            </div>
+
+            <SensoryBadge
+              score={route.scoreResult.score}
+              label={route.scoreResult.label}
+              size="sm"
+            />
+          </div>
+        </section>
       ) : (
         <p className="text-inkSoft mb-6 max-w-xl">
           No route selected yet - showing quiet spaces and current disruptions around Melbourne.{' '}
@@ -80,8 +106,8 @@ export default function MapPage() {
 
       {route && (
         <p className="text-xs text-inkSoft mt-3 max-w-xl">
-          The line between stops is a straight-line approximation for the MVP, not the actual transport path - a
-          live GTFS shape feed would replace this in a later iteration.
+          The displayed route is a simulated MVP path, not an official PTV navigation route. 
+          Live GTFS route shapes will replace it in a later iteration.
         </p>
       )}
 

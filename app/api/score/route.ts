@@ -20,7 +20,13 @@ const routeSchema = z.object({
   origin: z.string(),
   destination: z.string(),
   originCoords: z.object({ lat: z.number(), lng: z.number() }),
-  destCoords: z.object({ lat: z.number(), lng: z.number() })
+  destCoords: z.object({ lat: z.number(), lng: z.number() }),
+  routePath: z.array(
+    z.object({
+      lat: z.number(),
+      lng: z.number()
+    })
+  ).min(2)
 });
 
 const preferencesSchema = z.object({
