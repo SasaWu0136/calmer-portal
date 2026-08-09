@@ -68,7 +68,15 @@ const MODES: RouteOption['mode'][] = ['Train', 'Tram', 'Bus', 'Train + Tram', 'T
  * README, "Connecting real data", for how to swap this out later without
  * touching the scoring engine or the UI.
  */
-export function generateMockRoutes(origin: string, destination: string, detectedOriginCoords?: Coordinates, selectedMode: 'any' | 'train' | 'tram' | 'bus' = 'any'): RouteOption[] {
+export function generateMockRoutes
+(
+  origin: string,
+  destination: string,
+  detectedOriginCoords?: Coordinates,
+  selectedMode: 'any' | 'train' | 'tram' | 'bus' = 'any',
+  travelTime?: string
+): RouteOption[] 
+{
   const originCoords = detectedOriginCoords ?? resolveCoords(origin);
   const destCoords = resolveCoords(destination);
   const baseSeed = hashString(`${origin.toLowerCase()}->${destination.toLowerCase()}`);
@@ -76,6 +84,13 @@ export function generateMockRoutes(origin: string, destination: string, detected
 
   const routeCount = 3;
   const routes: RouteOption[] = [];
+  const travelHour = travelTime
+  ? Number.parseInt(travelTime.split(':')[0], 10)
+  : null;
+  const isPeakHour =
+    travelHour !== null &&
+    ((travelHour >= 7 && travelHour < 10) ||
+      (travelHour >= 16 && travelHour < 19));
   const availableModes: RouteOption['mode'][] =
   selectedMode === 'train'
     ? ['Train']
@@ -93,7 +108,17 @@ export function generateMockRoutes(origin: string, destination: string, detected
     const walkingMeters = Math.round(150 + r(2) * 900);
     const baseTime = Math.max(12, straightLineKm * (3.5 + r(3) * 2));
     const travelTimeMinutes = Math.round(baseTime + transfers * 6 + r(4) * 8);
-    const crowdLevel = CROWD_LEVELS[Math.floor(r(5) * CROWD_LEVELS.length)];
+    const baseCrowdIndex = Math.floor(
+      r(5) * CROWD_LEVELS.length);
+
+    const adjustedCrowdIndex =
+      travelHour === null
+        ? baseCrowdIndex
+        : isPeakHour
+          ? Math.min(CROWD_LEVELS.length - 1, baseCrowdIndex + 1)
+          : Math.max(0, baseCrowdIndex - 1);
+
+    const crowdLevel = CROWD_LEVELS[adjustedCrowdIndex];
     const hasDisruption = r(6) < 0.28;
     const hasConstruction = r(7) < 0.22;
     const busyZone = r(8) < 0.3;
