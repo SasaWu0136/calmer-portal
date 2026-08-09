@@ -19,6 +19,8 @@ const originLng = searchParams.get('originLng');
 const detectedOriginCoords =
   originLat !== null &&
   originLng !== null &&
+  originLat.trim() !== '' &&
+  originLng.trim() !== '' &&
   Number.isFinite(Number(originLat)) &&
   Number.isFinite(Number(originLng))
     ? {
