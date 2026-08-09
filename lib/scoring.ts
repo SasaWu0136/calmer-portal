@@ -79,6 +79,14 @@ export function computeSensoryScore(route: RouteOption, prefs: SensoryPreference
     explanation.push('Direct journey with no transfers');
   }
 
+  const minimumCrowdScore =
+    route.crowdLevel === 'high'
+      ? 3 * weight(prefs.crowd)
+      : route.crowdLevel === 'medium'
+        ? 1.5 * weight(prefs.crowd)
+        : 0;
+
+  score = Math.max(score, minimumCrowdScore);
   score = Math.max(0, Math.round(score * 10) / 10);
 
   return {

@@ -1,6 +1,7 @@
 import { Coordinates, CrowdLevel, RouteOption } from './types';
 import { QUIET_SPACES } from './quietSpacesData';
 import { distanceMeters, hashString, seededRandom } from './geo';
+import { MOCK_CROWD_ZONES } from './crowdZonesData';
 
 const MELBOURNE_CBD: Coordinates = { lat: -37.8136, lng: 144.9631 };
 
@@ -56,6 +57,55 @@ function nearestQuietSpace(point: Coordinates) {
   return best;
 }
 
+function minimumDistanceToPath(
+  point: Coordinates,
+  path: Coordinates[]
+): number {
+  let minimumDistance = Number.POSITIVE_INFINITY;
+
+  for (let segmentIndex = 0; segmentIndex < path.length - 1; segmentIndex++) {
+    const start = path[segmentIndex];
+    const end = path[segmentIndex + 1];
+
+    // Sample points along each simulated route segment.
+    for (let step = 0; step <= 20; step++) {
+      const progress = step / 20;
+      const sampledPoint = {
+        lat: start.lat + (end.lat - start.lat) * progress,
+        lng: start.lng + (end.lng - start.lng) * progress
+      };
+
+      minimumDistance = Math.min(
+        minimumDistance,
+        distanceMeters(point, sampledPoint)
+      );
+    }
+  }
+
+  return minimumDistance;
+}
+
+function crowdLevelForPath(path: Coordinates[]): CrowdLevel {
+  let result: CrowdLevel = 'low';
+
+  for (const zone of MOCK_CROWD_ZONES) {
+    const distance = minimumDistanceToPath(
+      { lat: zone.lat, lng: zone.lng },
+      path
+    );
+
+    if (distance <= zone.radiusMeters) {
+      if (zone.level === 'high') {
+        return 'high';
+      }
+
+      result = 'medium';
+    }
+  }
+
+  return result;
+}
+
 const CROWD_LEVELS: CrowdLevel[] = ['low', 'medium', 'high'];
 const MODES: RouteOption['mode'][] = ['Train', 'Tram', 'Bus', 'Train + Tram', 'Train + Walk'];
 
@@ -68,7 +118,15 @@ const MODES: RouteOption['mode'][] = ['Train', 'Tram', 'Bus', 'Train + Tram', 'T
  * README, "Connecting real data", for how to swap this out later without
  * touching the scoring engine or the UI.
  */
-export function generateMockRoutes(origin: string, destination: string, detectedOriginCoords?: Coordinates): RouteOption[] {
+export function generateMockRoutes
+(
+  origin: string,
+  destination: string,
+  detectedOriginCoords?: Coordinates,
+  selectedMode: 'any' | 'train' | 'tram' | 'bus' = 'any',
+  travelTime?: string
+): RouteOption[] 
+{
   const originCoords = detectedOriginCoords ?? resolveCoords(origin);
   const destCoords = resolveCoords(destination);
   const baseSeed = hashString(`${origin.toLowerCase()}->${destination.toLowerCase()}`);
@@ -76,6 +134,21 @@ export function generateMockRoutes(origin: string, destination: string, detected
 
   const routeCount = 3;
   const routes: RouteOption[] = [];
+  const travelHour = travelTime
+  ? Number.parseInt(travelTime.split(':')[0], 10)
+  : null;
+  const isPeakHour =
+    travelHour !== null &&
+    ((travelHour >= 7 && travelHour < 10) ||
+      (travelHour >= 16 && travelHour < 19));
+  const availableModes: RouteOption['mode'][] =
+  selectedMode === 'train'
+    ? ['Train']
+    : selectedMode === 'tram'
+      ? ['Tram']
+      : selectedMode === 'bus'
+        ? ['Bus']
+        : MODES;
 
   for (let i = 0; i < routeCount; i++) {
     const seed = baseSeed + i * 97;
@@ -85,11 +158,21 @@ export function generateMockRoutes(origin: string, destination: string, detected
     const walkingMeters = Math.round(150 + r(2) * 900);
     const baseTime = Math.max(12, straightLineKm * (3.5 + r(3) * 2));
     const travelTimeMinutes = Math.round(baseTime + transfers * 6 + r(4) * 8);
-    const crowdLevel = CROWD_LEVELS[Math.floor(r(5) * CROWD_LEVELS.length)];
+    // const baseCrowdIndex = Math.floor(
+    //   r(5) * CROWD_LEVELS.length);
+
+    // const adjustedCrowdIndex =
+    //   travelHour === null
+    //     ? baseCrowdIndex
+    //     : isPeakHour
+    //       ? Math.min(CROWD_LEVELS.length - 1, baseCrowdIndex + 1)
+    //       : Math.max(0, baseCrowdIndex - 1);
+
+    // const crowdLevel = CROWD_LEVELS[adjustedCrowdIndex];
     const hasDisruption = r(6) < 0.28;
     const hasConstruction = r(7) < 0.22;
     const busyZone = r(8) < 0.3;
-    const mode = MODES[Math.floor(r(9) * MODES.length)];
+    const mode = availableModes[Math.floor(r(9) * availableModes.length)];
 
     // Simulate a slightly different alighting point per route option, so
     // quiet-space proximity varies meaningfully between alternatives.
@@ -99,6 +182,49 @@ export function generateMockRoutes(origin: string, destination: string, detected
     };
     const nearest = nearestQuietSpace(alightPoint);
     const quietSpaceNearby = !!nearest && nearest.distance <= 350;
+    const midpoint = {
+      lat: (originCoords.lat + destCoords.lat) / 2,
+      lng: (originCoords.lng + destCoords.lng) / 2
+    };
+
+    const deltaLat = destCoords.lat - originCoords.lat;
+    const deltaLng = destCoords.lng - originCoords.lng;
+    const routeLength = Math.sqrt(
+      deltaLat * deltaLat + deltaLng * deltaLng
+    );
+
+    const perpendicularLat =
+      routeLength > 0 ? -deltaLng / routeLength : 1;
+    const perpendicularLng =
+      routeLength > 0 ? deltaLat / routeLength : 0;
+
+    const routeOffsets = [-0.008, 0, 0.008];
+    const offset = routeOffsets[i];
+
+    const routeWaypoint: Coordinates = {
+      lat: midpoint.lat + perpendicularLat * offset,
+      lng: midpoint.lng + perpendicularLng * offset
+    };
+
+    const routePath: Coordinates[] = [
+      originCoords,
+      routeWaypoint,
+      destCoords
+    ];
+
+    const spatialCrowdLevel = crowdLevelForPath(routePath);
+    const spatialCrowdIndex =
+      CROWD_LEVELS.indexOf(spatialCrowdLevel);
+
+    const adjustedCrowdIndex =
+      travelHour !== null && isPeakHour
+        ? Math.min(
+            CROWD_LEVELS.length - 1,
+            spatialCrowdIndex + 1
+          )
+        : spatialCrowdIndex;
+
+    const crowdLevel = CROWD_LEVELS[adjustedCrowdIndex];
 
     routes.push({
       id: `route-${i + 1}-${baseSeed}`,
@@ -117,7 +243,8 @@ export function generateMockRoutes(origin: string, destination: string, detected
       origin,
       destination,
       originCoords,
-      destCoords
+      destCoords,
+      routePath
     });
   }
 

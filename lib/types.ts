@@ -20,6 +20,16 @@ export const DEFAULT_PREFERENCES: SensoryPreferences = {
 
 export type CrowdLevel = 'low' | 'medium' | 'high';
 
+export interface CrowdZone {
+  id: string;
+  name: string;
+  level: CrowdLevel;
+  lat: number;
+  lng: number;
+  radiusMeters: number;
+  reason: string;
+}
+
 export interface Coordinates {
   lat: number;
   lng: number;
@@ -43,6 +53,7 @@ export interface RouteOption {
   destination: string;
   originCoords: Coordinates;
   destCoords: Coordinates;
+  routePath: Coordinates[];
 }
 
 export type SensoryLabel = 'Low sensory load' | 'Medium sensory load' | 'High sensory load' | 'Very high sensory load';

@@ -2,8 +2,8 @@
 
 import 'leaflet/dist/leaflet.css';
 import L from 'leaflet';
-import { MapContainer, TileLayer, Marker, Popup, Polyline } from 'react-leaflet';
-import { QuietSpace, Disruption } from '@/lib/types';
+import { MapContainer, TileLayer, Marker, Popup, Polyline, Circle } from 'react-leaflet';
+import { QuietSpace, Disruption, CrowdZone } from '@/lib/types';
 
 export interface StopMarker {
   id: string;
@@ -20,6 +20,7 @@ interface MapViewProps {
   disruptions?: Disruption[];
   stops?: StopMarker[];
   routeLine?: [number, number][];
+  crowdZones?: CrowdZone[];
 }
 
 const LEGEND_COLORS = {
@@ -52,6 +53,7 @@ export default function MapView({
   height = '480px',
   quietSpaces = [],
   disruptions = [],
+  crowdZones = [],
   stops = [],
   routeLine
 }: MapViewProps) {
@@ -67,6 +69,38 @@ export default function MapView({
             attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
+
+          {crowdZones.map((zone) => {
+            const isHigh = zone.level === 'high';
+
+            return (
+              <Circle
+                key={zone.id}
+                center={[zone.lat, zone.lng]}
+                radius={zone.radiusMeters}
+                pathOptions={{
+                  color: isHigh ? '#A33A32' : '#B6763A',
+                  fillColor: isHigh ? '#C0453B' : '#D99A54',
+                  fillOpacity: 0.24,
+                  weight: 2
+                }}
+              >
+                <Popup>
+                  <strong>{zone.name}</strong>
+                  <br />
+                  <span>
+                    {zone.level === 'high'
+                      ? 'High pedestrian density'
+                      : 'Medium pedestrian density'}
+                  </span>
+                  <br />
+                  <span>{zone.reason}</span>
+                  <br />
+                  <small>Simulated MVP data</small>
+                </Popup>
+              </Circle>
+            );
+          })}
 
           {routeLine && routeLine.length > 1 && (
             <Polyline positions={routeLine} pathOptions={{ color: '#3F6E5D', weight: 4, opacity: 0.8 }} />
@@ -118,6 +152,37 @@ export default function MapView({
         <li className="flex items-center gap-2">
           <span className="w-3 h-3 rounded-full inline-block" style={{ background: LEGEND_COLORS.disruption }} />
           Disruption
+        </li>
+        <li className="flex items-center gap-2">
+          <span
+            className="w-3 h-3 rounded-full inline-block"
+            style={{ background: LEGEND_COLORS.quiet }}
+          />
+          Quiet space
+        </li>
+
+        <li className="flex items-center gap-2">
+          <span
+            className="w-3 h-3 rounded-full inline-block"
+            style={{ background: LEGEND_COLORS.disruption }}
+          />
+          Disruption
+        </li>
+
+        <li className="flex items-center gap-2">
+          <span
+            className="w-3 h-3 rounded-full inline-block border border-caution-dark"
+            style={{ background: '#C0453B' }}
+          />
+          High pedestrian density
+        </li>
+
+        <li className="flex items-center gap-2">
+          <span
+            className="w-3 h-3 rounded-full inline-block"
+            style={{ background: '#D99A54' }}
+          />
+          Medium pedestrian density
         </li>
       </ul>
     </div>
