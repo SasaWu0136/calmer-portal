@@ -1,6 +1,6 @@
 import { ScoredRoute } from '@/lib/types';
 import SensoryBadge from './SensoryBadge';
-import { Clock, Footprints, Repeat, TreePine } from 'lucide-react';
+import { Clock, Footprints, Repeat, TreePine, Users} from 'lucide-react';
 
 interface RouteCardProps {
   route: ScoredRoute;
@@ -36,6 +36,13 @@ export default function RouteCard({ route, rank, onChoose }: RouteCardProps) {
           <Footprints className="w-4 h-4" aria-hidden="true" />
           <dt className="sr-only">Walking distance</dt>
           <dd>{route.walkingMeters}m walking</dd>
+        </div>
+        <div className="flex items-center gap-1.5">
+          <Users className="w-4 h-4" aria-hidden="true" />
+          <dt className="sr-only">Crowd level</dt>
+          <dd className="capitalize">
+            {route.crowdLevel} crowd
+          </dd>
         </div>
         {route.quietSpaceNearby && (
           <div className="flex items-center gap-1.5 text-tram-dark">
