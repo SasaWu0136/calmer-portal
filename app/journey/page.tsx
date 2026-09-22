@@ -54,7 +54,7 @@ export default function JourneySearchPage() {
       <form
         method="GET"
         action="/results"
-        className="max-w-2xl bg-white border border-line rounded-card px-6 sm:px-8 py-6 space-y-6"
+        className="surface-card max-w-3xl rounded-[1.5rem] px-6 py-7 sm:px-8 sm:py-8 space-y-7"
       >
         <input type="hidden" name="originLat" value={originCoords?.lat ?? ''} />
         <input type="hidden" name="originLng" value={originCoords?.lng ?? ''} />

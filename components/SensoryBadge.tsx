@@ -26,8 +26,8 @@ export default function SensoryBadge({ score, label, size = 'md' }: SensoryBadge
   const sizing = SIZES[size];
 
   return (
-    <span className={clsx('inline-flex items-center gap-2 rounded-full', styles.bg, sizing.pad)}>
-      <CalmWave score={score} width={sizing.wave.width} height={sizing.wave.height} strokeColor={styles.wave} />
+    <span className={clsx('inline-flex max-w-full items-center gap-2 rounded-full', styles.bg, sizing.pad)}>
+      <CalmWave className="hidden shrink-0 sm:block" score={score} width={sizing.wave.width} height={sizing.wave.height} strokeColor={styles.wave} />
       <span className={clsx('font-medium whitespace-nowrap', styles.text, sizing.text)}>{label}</span>
     </span>
   );

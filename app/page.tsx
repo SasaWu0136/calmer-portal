@@ -1,5 +1,5 @@
 import Link from 'next/link';
-import { SlidersHorizontal, Route, TreePine, MessageSquareText } from 'lucide-react';
+import { SlidersHorizontal, Route, TreePine, MessageSquareText, Clock3, Footprints, Users, ArrowRight } from 'lucide-react';
 
 function HeroWave() {
   const width = 1200;
@@ -63,49 +63,57 @@ const STEPS = [
 export default function LandingPage() {
   return (
     <div>
-      <section className="mx-auto max-w-content px-5 sm:px-8 pt-14 sm:pt-20 pb-6">
-        <p className="text-sm font-medium tracking-wide text-tram-dark uppercase mb-4">
-          Melbourne public transport, planned around you
-        </p>
-        <h1 className="font-display text-4xl sm:text-6xl leading-[1.05] text-ink max-w-3xl">
-          Plan journeys that help you arrive calm.
-        </h1>
-        <p className="mt-6 text-lg text-inkSoft max-w-2xl leading-relaxed">
-          Melbourne&apos;s trains, trams and buses can be genuinely overwhelming - crowded platforms, sudden
-          disruptions, long walks between stops. Calmer compares your route options by sensory load, not just
-          speed, so you can choose the trip that actually works for you.
-        </p>
-        <div className="mt-9 flex flex-wrap items-center gap-4">
-          <Link
-            href="/preferences"
-            className="focus-ring inline-flex items-center rounded-full bg-tram px-6 py-3 text-white font-medium hover:bg-tram-dark transition-colors"
-          >
-            Plan a calmer journey
-          </Link>
-          <Link
-            href="/quiet-spaces"
-            className="focus-ring inline-flex items-center rounded-full border border-line px-6 py-3 text-ink font-medium hover:bg-paperDim transition-colors"
-          >
-            Browse quiet spaces
-          </Link>
+      <section className="mx-auto grid max-w-content gap-12 px-5 pb-16 pt-14 sm:px-8 sm:pt-20 2xl:grid-cols-[minmax(0,1.02fr)_minmax(0,.98fr)] 2xl:items-center 2xl:gap-16">
+        <div>
+          <p className="eyebrow mb-5">Melbourne public transport, planned around you</p>
+          <h1 className="font-display text-5xl leading-[.98] tracking-[-0.035em] text-ink sm:text-7xl">
+            Arrive with more <span className="italic text-tram">calm</span> left in you.
+          </h1>
+          <p className="mt-7 max-w-xl text-lg leading-relaxed text-inkSoft">
+            Compare Melbourne routes by crowds, walking, transfers and disruptions—not travel time alone. Calmer helps you choose the journey that feels manageable today.
+          </p>
+          <div className="mt-9 flex flex-wrap items-center gap-4">
+            <Link href="/preferences" className="focus-ring inline-flex items-center gap-2 rounded-full bg-tram px-6 py-3.5 font-medium text-white shadow-soft transition hover:-translate-y-0.5 hover:bg-tram-dark">
+              Plan a calmer journey <ArrowRight className="h-4 w-4" />
+            </Link>
+            <Link href="/quiet-spaces" className="focus-ring inline-flex items-center rounded-full border border-line bg-white/70 px-6 py-3.5 font-medium text-ink transition-colors hover:bg-white">
+              Browse quiet spaces
+            </Link>
+          </div>
+          <p className="mt-5 text-xs text-inkSoft">No diagnosis needed · Preferences stay on your device</p>
+        </div>
+
+        <div className="relative mx-auto w-full max-w-xl" aria-label="Example of a calmer route comparison">
+          <div className="absolute -inset-6 -z-10 rounded-[2.5rem] bg-gradient-to-br from-tram-light via-white/30 to-dusk-light blur-2xl" />
+          <div className="surface-card overflow-hidden rounded-[1.75rem] p-5 sm:p-7">
+            <div className="flex flex-wrap items-start justify-between gap-4 border-b border-line pb-5">
+              <div><p className="text-xs font-semibold uppercase tracking-[.14em] text-inkSoft">Recommended route</p><h2 className="mt-2 text-xl font-semibold">Train via Richmond</h2></div>
+              <span className="rounded-full bg-tram-light px-3 py-1.5 text-xs font-semibold text-tram-dark">Low sensory load</span>
+            </div>
+            <div className="my-6 flex items-center gap-3" aria-hidden="true">
+              <span className="h-4 w-4 rounded-full border-[4px] border-tram bg-white" />
+              <span className="h-1 flex-1 rounded-full bg-gradient-to-r from-tram via-tram/60 to-dusk/50" />
+              <span className="h-4 w-4 rounded-full border-[4px] border-dusk bg-white" />
+            </div>
+            <div className="grid grid-cols-3 gap-3">
+              {[{icon: Clock3,label:'42 min',sub:'travel time'}, {icon: Users,label:'Low',sub:'crowd level'}, {icon: Footprints,label:'240 m',sub:'walking'}].map((item) => (
+                <div key={item.sub} className="rounded-2xl bg-paperDim/70 p-3.5"><item.icon className="mb-3 h-4 w-4 text-tram"/><p className="font-semibold text-ink">{item.label}</p><p className="mt-0.5 text-[11px] text-inkSoft">{item.sub}</p></div>
+              ))}
+            </div>
+            <div className="mt-5 rounded-2xl border border-tram/15 bg-tram-light/60 p-4"><p className="text-xs font-semibold text-tram-dark">Why this route feels calmer</p><p className="mt-1.5 text-sm leading-relaxed text-inkSoft">Fewer transfers, a quieter interchange and a short walk at the destination.</p></div>
+          </div>
         </div>
       </section>
 
-      <section className="mx-auto max-w-content px-5 sm:px-8 py-8" aria-hidden="true">
-        <HeroWave />
-        <div className="flex justify-between text-xs text-inkSoft mt-2 max-w-content">
-          <span>A busy, unfamiliar route</span>
-          <span>A route that eases off</span>
-        </div>
-      </section>
+      <section className="mx-auto max-w-content px-5 sm:px-8 pb-10" aria-hidden="true"><div className="rounded-full bg-white/55 px-5 py-2 shadow-soft"><HeroWave /></div></section>
 
       <section className="mx-auto max-w-content px-5 sm:px-8 py-16 border-t border-line">
         <h2 className="font-display text-2xl sm:text-3xl text-ink mb-2">How Calmer works</h2>
         <p className="text-inkSoft mb-10 max-w-xl">Four steps, every time you travel.</p>
-        <div className="grid sm:grid-cols-2 gap-8">
+        <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-4">
           {STEPS.map((step) => (
-            <div key={step.title} className="flex gap-4">
-              <div className="shrink-0 w-11 h-11 rounded-full bg-tram-light flex items-center justify-center">
+            <div key={step.title} className="surface-card rounded-[1.35rem] p-5">
+              <div className="mb-5 flex h-11 w-11 items-center justify-center rounded-2xl bg-tram-light">
                 <step.icon className="w-5 h-5 text-tram-dark" aria-hidden="true" />
               </div>
               <div>

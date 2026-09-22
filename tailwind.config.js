@@ -7,14 +7,14 @@ module.exports = {
   theme: {
     extend: {
       colors: {
-        paper: '#F3F4F1',
-        paperDim: '#EBEDE7',
-        ink: '#262A28',
-        inkSoft: '#586058',
+        paper: '#F7F8F4',
+        paperDim: '#EEF1EA',
+        ink: '#17231F',
+        inkSoft: '#596760',
         tram: {
-          DEFAULT: '#3F6E5D',
-          light: '#E4EEE9',
-          dark: '#2C4F42'
+          DEFAULT: '#31735C',
+          light: '#DFF2E9',
+          dark: '#1D5542'
         },
         dusk: {
           DEFAULT: '#5B6B93',
@@ -26,7 +26,7 @@ module.exports = {
           light: '#F5E9DC',
           dark: '#8A5726'
         },
-        line: '#D8DAD3'
+        line: '#DCE2DA'
       },
       fontFamily: {
         display: ['Iowan Old Style', 'Georgia', 'Cambria', 'Times New Roman', 'serif'],
@@ -36,7 +36,8 @@ module.exports = {
         card: '14px'
       },
       boxShadow: {
-        soft: '0 1px 2px rgba(38, 42, 40, 0.04), 0 4px 16px rgba(38, 42, 40, 0.04)'
+        soft: '0 1px 2px rgba(23, 35, 31, 0.04), 0 14px 38px rgba(23, 35, 31, 0.07)',
+        lift: '0 22px 60px rgba(23, 35, 31, 0.12)'
       },
       maxWidth: {
         content: '72rem'

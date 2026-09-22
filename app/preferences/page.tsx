@@ -13,32 +13,32 @@ const FIELDS: {
 }[] = [
   {
     key: 'crowd',
-    question: 'What affects your journey: crowds?',
+    question: 'Crowds',
     helpText: 'Busy platforms, packed carriages, queues.'
   },
   {
     key: 'noise',
-    question: 'What affects your journey: noise?',
+    question: 'Noise',
     helpText: 'Announcements, traffic, busy CBD or event zones.'
   },
   {
     key: 'disruptions',
-    question: 'What affects your journey: sudden disruptions?',
+    question: 'Sudden disruptions',
     helpText: 'Unexpected delays, cancellations, roadworks.'
   },
   {
     key: 'walking',
-    question: 'What affects your journey: long walking distances?',
+    question: 'Long walking distances',
     helpText: 'Walking between platforms, stops, or to your destination.'
   },
   {
     key: 'transfers',
-    question: 'What affects your journey: too many transfers?',
+    question: 'Multiple transfers',
     helpText: 'Changing trains, trams or buses partway through a trip.'
   },
   {
     key: 'visualLoad',
-    question: 'What affects your journey: busy or flashing visual environments?',
+    question: 'Busy visual environments',
     helpText: 'Screens, signage, crowds of moving people.'
   }
 ];
@@ -72,7 +72,7 @@ export default function PreferencesPage() {
         can change them any time, and they stay on this device.
       </p>
 
-      <form onSubmit={handleSave} className="max-w-2xl bg-white border border-line rounded-card px-6 sm:px-8">
+      <form onSubmit={handleSave} className="surface-card max-w-3xl rounded-[1.5rem] px-6 sm:px-8">
         {FIELDS.map((field) => (
           <PreferenceSlider
             key={field.key}

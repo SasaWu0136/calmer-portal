@@ -16,11 +16,13 @@ export default function Navbar() {
   const pathname = usePathname();
 
   return (
-    <header className="border-b border-line bg-paper/95 backdrop-blur sticky top-0 z-40">
-      <div className="mx-auto max-w-content px-5 sm:px-8 h-16 flex items-center justify-between gap-6">
+    <header className="border-b border-white/70 bg-paper/75 backdrop-blur-xl sticky top-0 z-40">
+      <div className="mx-auto max-w-content px-5 sm:px-8 h-[4.5rem] flex items-center justify-between gap-6">
         <Link href="/" className="flex items-center gap-2.5 focus-ring rounded-lg" aria-label="Calmer home">
-          <CalmWave score={1} width={30} height={22} strokeColor="#3F6E5D" />
-          <span className="font-display text-lg tracking-tight text-ink">Calmer</span>
+          <span className="grid h-10 w-10 place-items-center rounded-2xl bg-tram text-white shadow-soft">
+            <CalmWave score={1} width={24} height={18} strokeColor="#FFFFFF" />
+          </span>
+          <span className="font-display text-xl tracking-tight text-ink">Calmer</span>
         </Link>
 
         <nav aria-label="Main" className="hidden md:flex items-center gap-1">
@@ -31,7 +33,7 @@ export default function Navbar() {
                 key={link.href}
                 href={link.href}
                 className={clsx(
-                  'px-3 py-2 rounded-full text-sm transition-colors focus-ring',
+                  'px-4 py-2 rounded-full text-sm transition-colors focus-ring',
                   active ? 'bg-tram-light text-tram-dark font-medium' : 'text-inkSoft hover:text-ink hover:bg-paperDim'
                 )}
                 aria-current={active ? 'page' : undefined}
@@ -42,11 +44,8 @@ export default function Navbar() {
           })}
         </nav>
 
-        <Link
-          href="/admin"
-          className="hidden sm:inline-block text-xs text-inkSoft hover:text-ink underline underline-offset-4 focus-ring rounded"
-        >
-          Admin
+        <Link href="/journey" className="hidden 2xl:inline-flex rounded-full bg-ink px-4 py-2 text-sm font-medium text-white hover:bg-tram-dark focus-ring">
+          Plan a route
         </Link>
       </div>
 
